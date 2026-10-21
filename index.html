@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="ru"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Налоговый калькулятор v2</title>
+<style>
+:root{--bg:#f5f6f8;--card:#fff;--ink:#161a22;--mut:#6b7280;--line:#e6e8ec;--acc:#2f4bd8;--soft:#eef1ff;--good:#0f7b5f;--gsoft:#e3f5ee;--bad:#c0392b;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:#0f1218;--card:#171b24;--ink:#e8ebf2;--mut:#9aa3b2;--line:#262c38;--acc:#8ea2ff;--soft:#1d2440;--good:#34c79a;--gsoft:#12302a;--bad:#ff7a6b;color-scheme:dark}}
+:root[data-theme=dark]{--bg:#0f1218;--card:#171b24;--ink:#e8ebf2;--mut:#9aa3b2;--line:#262c38;--acc:#8ea2ff;--soft:#1d2440;--good:#34c79a;--gsoft:#12302a;--bad:#ff7a6b;color-scheme:dark}
+*{box-sizing:border-box}html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 "Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;font-variant-numeric:tabular-nums}
+header,main{max-width:1200px;margin:0 auto;padding:0 20px}main{padding-bottom:40px}
+header{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;padding-top:24px;padding-bottom:18px}
+h1{font-size:22px;margin:0;font-weight:650}h2{font-size:15px;margin:0 0 12px;font-weight:650;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.hd{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.chip{background:var(--soft);color:var(--acc);padding:6px 12px;border-radius:20px;font-size:13px}
+button,select,input{font:inherit;color:inherit}.btn{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:8px 14px;cursor:pointer}.btn:hover{border-color:var(--acc)}.btn.p{background:var(--acc);color:#fff;border-color:var(--acc)}
+:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+.grid{display:grid;grid-template-columns:320px 1fr;gap:20px;align-items:start}@media(max-width:900px){.grid{grid-template-columns:1fr}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:20px}.col{min-width:0}.side{position:sticky;top:12px}@media(max-width:900px){.side{position:static}}
+.seg{display:grid;grid-template-columns:1fr 1fr;background:var(--bg);border-radius:10px;padding:3px;margin-bottom:14px}.seg button{border:0;background:none;padding:7px;border-radius:8px;cursor:pointer}.seg .on{background:var(--card);box-shadow:0 1px 3px rgba(0,0,0,.12);font-weight:600}
+label{display:block;margin-bottom:12px;font-size:13px;color:var(--mut)}.r2{display:grid;grid-template-columns:1fr 96px;gap:10px}
+.in{display:flex;align-items:center;border:1px solid var(--line);border-radius:10px;background:var(--card);margin-top:4px;padding:0 10px}.in:focus-within{border-color:var(--acc)}
+.in input{border:0;background:none;padding:8px 0;width:100%;min-width:0;outline:0;color:var(--ink)}.in span{color:var(--mut)}
+.q{display:inline-grid;place-items:center;width:16px;height:16px;border-radius:50%;background:var(--line);color:var(--mut);font-size:11px;cursor:help}
+.chk{display:flex;gap:8px;align-items:center;margin:2px 0 14px}.chk input{accent-color:var(--acc)}
+.hero{background:var(--gsoft);border-color:transparent;display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px;align-items:center}.hero small{color:var(--mut)}
+.big{font-size:36px;font-weight:700;color:var(--good);letter-spacing:-.02em;line-height:1.1}
+.bar{display:grid;grid-template-columns:minmax(120px,200px) 1fr 118px;gap:12px;align-items:center;padding:5px 8px;border-radius:8px;cursor:pointer;font-size:14px}.bar:hover{background:var(--soft)}
+.trk{height:12px;background:var(--bg);border-radius:6px;overflow:hidden}.fl{height:100%;background:var(--acc);opacity:.55;border-radius:6px;min-width:2px}.best .fl{background:var(--good);opacity:1}.neg .fl{background:var(--bad)}
+.bar .v{text-align:right;font-weight:600}.best .v{color:var(--good)}.neg .v{color:var(--bad)}@media(max-width:560px){.bar{grid-template-columns:1fr 96px}.bar .trk{grid-column:1/3;order:3}}
+.st{display:flex;height:22px;border-radius:6px;overflow:hidden;background:var(--bg)}.st i{display:block;height:100%}
+.lg{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:12px;color:var(--mut);margin-top:10px}.lg b{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px}
+svg text{fill:var(--mut);font-size:11px}@media(max-width:600px){svg text{font-size:20px}th,td{padding:8px 6px;font-size:13px}.card{padding:14px}}.sc{overflow-x:auto}table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{padding:9px 10px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}th:first-child,td:first-child{text-align:left}th{color:var(--mut);font-weight:500}
+td.c{cursor:pointer;font-weight:600}td.c:hover{outline:2px solid var(--acc)}td.best{color:var(--good);font-weight:700}td.na{color:var(--mut)}td.neg{color:var(--bad)}tr.t td{font-weight:650}
+#tip{position:fixed;z-index:50;display:none;max-width:300px;background:#1c212b;color:#f2f4f8;padding:9px 12px;border-radius:10px;font-size:13px;line-height:1.45;pointer-events:none;box-shadow:0 6px 20px rgba(0,0,0,.25)}
+dialog{border:1px solid var(--line);border-radius:16px;background:var(--card);color:var(--ink);padding:22px;width:min(680px,94vw);max-height:90vh}dialog::backdrop{background:rgba(10,14,22,.55)}
+.pg{display:grid;grid-template-columns:1fr 1fr;gap:0 18px}@media(max-width:600px){.pg{grid-template-columns:1fr}}.pg h3{grid-column:1/-1;font-size:14px;margin:14px 0 8px;color:var(--acc)}.pg label{margin-bottom:8px}.err{color:var(--bad);font-size:13px;min-height:18px}
+</style></head><body>
+<header><h1>Налоговый калькулятор <span class="q" id="inf">i</span></h1><div class="hd"><span class="chip" id="eff"></span><button class="btn p" id="pdf" hidden>Скачать PDF</button><button class="btn" id="lock">🔒 Параметры закона</button></div></header>
+<main class="grid">
+<section class="card side"><div class="seg" id="seg"><button data-f="ip" class="on">ИП</button><button data-f="ooo">ООО</button></div>
+<label>Выручка с НДС <span class="q" data-tip="Годовая сумма, которую платит покупатель, с НДС. Значения применяются по Enter.">?</span><div class="in"><input data-k="rev" inputmode="numeric"><span>₽</span></div></label>
+<div class="r2"><label>Переменные расходы <span class="q" data-tip="Закупка, материалы, комиссии. Растут вместе с продажами.">?</span><div class="in"><input data-k="vc" inputmode="numeric"><span>₽</span></div></label><label>с НДС <span class="q" data-tip="Доля расходов у поставщиков с НДС.">?</span><div class="in"><input data-k="vs" data-p="1" inputmode="numeric"><span>%</span></div></label></div>
+<div class="r2"><label>Постоянные расходы <span class="q" data-tip="Аренда, реклама, сервисы. Зарплату и взносы не включайте: они считаются ниже по числу работников.">?</span><div class="in"><input data-k="fc" inputmode="numeric"><span>₽</span></div></label><label>с НДС <span class="q" data-tip="Доля расходов с входящим НДС.">?</span><div class="in"><input data-k="fs" data-p="1" inputmode="numeric"><span>%</span></div></label></div>
+<div class="r2"><label>Зарплата, на 1 чел./мес <span class="q" data-tip="Оклад до вычета НДФЛ. Взносы считаются от неё: 30% до предельной базы и 15,1% сверх, плюс травматизм.">?</span><div class="in"><input data-k="sal" inputmode="numeric"><span>₽</span></div></label><label>Работники <span class="q" data-tip="Число наёмных работников без ИП. На АУСН не больше 5.">?</span><div class="in"><input data-k="n" inputmode="numeric"><span>чел.</span></div></label></div>
+<label class="chk"><input type="checkbox" id="msp"> Льготный тариф МСП <span class="q" data-tip="Тариф 15% с части зарплаты выше 1,5 МРОТ. С 2026 доступен только МСП из отдельных отраслей.">?</span></label>
+<button class="btn p" id="go" style="width:100%">Рассчитать (Enter)</button></section>
+<section class="col"><div class="card hero" id="hero"></div>
+<div class="card"><h2>Чистая прибыль по вариантам <span class="q" data-tip="Нажмите на строку, чтобы открыть подробный расчёт P&amp;L.">?</span></h2><div id="bars"></div></div>
+<div class="card"><h2>Куда уходит выручка <span class="q" data-tip="Доли от выручки с НДС для пяти лучших вариантов. Наведите на сегмент, чтобы увидеть сумму.">?</span></h2><div id="stk"></div><div class="lg" id="lgs"></div></div>
+<div class="card"><h2>Прибыль при другой выручке <span class="q" data-tip="Для каждого режима взят лучший вариант НДС. Выручка меняется от 20% до 180% текущей, переменные расходы растут пропорционально. Пересечение линий показывает, где выгоднее сменить режим. Штриховая линия: ваша выручка.">?</span></h2><svg id="ln" viewBox="0 0 720 290" width="100%" style="touch-action:none"></svg><div class="lg" id="lgl"></div></div>
+<div class="card"><h2>Матрица режимов <span class="q" data-tip="Строки: НДС. Столбцы: режим. Чем зеленее, тем выше прибыль. Прочерк: сочетание невозможно. н/д: недоступно по лимитам закона, наведите для причины.">?</span></h2><div class="sc"><table id="mx"></table></div></div></section></main>
+<div id="tip"></div><dialog id="dlg"></dialog>
+<script>
+const H='970a6def67970cd77249234154dcc832ff702c8f110465beb0151821576d6f3e',KEY='taxcalc.params.v2';
+const $=s=>document.querySelector(s),F=n=>Math.round(n).toLocaleString('ru-RU'),M=n=>F(n)+'\u00a0₽',ea=s=>s.replace(/"/g,'&quot;');
+const D={date:'2026-01-01',usnD:6,usnR:15,usnRm:1,ausnD:8,ausnR:20,ausnRm:3,profit:25,l0:2400000,l1:5000000,l2:20000000,l3:50000000,r0:13,r1:15,r2:18,r3:20,r4:22,v1:5,v2:7,vt:272500000,vs:22,vex:20000000,ex145:2000000,fix:57390,thr:300000,ir:1,maxVar:321818,maxTot:379208,cR:30,cLim:2979000,cR2:15.1,mrot:27093,mk:1.5,mR:15,injR:0.2,injF:2959,ded:50,dedSolo:100,usnLim:490500000,ausnLim:60000000,ausnN:5};
+const SCH=[['Ставки налогов'],['usnD','УСН «Доходы»','%'],['usnR','УСН «Доходы минус расходы»','%'],['usnRm','УСН Д−Р: минимальный налог','%'],['ausnD','АУСН «Доходы»','%'],['ausnR','АУСН «Доходы минус расходы»','%'],['ausnRm','АУСН Д−Р: минимальный налог','%'],['profit','Налог на прибыль ООО','%'],
+['НДФЛ ИП: границы ступеней'],['l0','Конец 1-й ступени','₽'],['l1','Конец 2-й ступени','₽'],['l2','Конец 3-й ступени','₽'],['l3','Конец 4-й ступени','₽'],
+['НДФЛ ИП: ставки'],['r0','Ступень 1','%'],['r1','Ступень 2','%'],['r2','Ступень 3','%'],['r3','Ступень 4','%'],['r4','Ступень 5','%'],
+['Ставки НДС'],['v1','Пониженный, 1-й уровень (УСН)','%'],['v2','Пониженный, 2-й уровень (УСН)','%'],['vt','Порог перехода на 2-й уровень','₽'],['vs','Стандартный (ОСНО)','%'],
+['Взносы ИП за себя'],['fix','Фиксированная часть','₽'],['thr','Порог дохода для 1%-го взноса','₽'],['ir','Ставка с превышения','%'],['maxVar','Максимум 1%-го взноса','₽'],['maxTot','Максимум взносов всего','₽'],
+['Взносы за работников'],['cR','Основной тариф','%'],['cLim','Предельная база на 1 чел. в год','₽'],['cR2','Тариф сверх базы','%'],['injR','Травматизм (мин. класс риска)','%'],['mrot','МРОТ','₽'],['mk','Порог льготы МСП, кратность МРОТ','×'],['mR','Льготный тариф МСП','%'],
+['Вычеты и лимиты'],['ded','Предел вычета взносов, УСН «Доходы»','%'],['dedSolo','Предел вычета для ИП без работников','%'],['injF','Взнос на травматизм на АУСН','₽'],['vex','Порог УСН для освобождения от НДС','₽'],['ex145','Лимит выручки за 3 мес. (освобождение на ОСНО)','₽'],['usnLim','Лимит доходов УСН','₽'],['ausnLim','Лимит доходов АУСН','₽'],['ausnN','Лимит работников АУСН','чел.']];
+function load(){try{return Object.assign({},D,JSON.parse(localStorage.getItem(KEY)||'{}'))}catch(e){return{...D}}}
+let P=load(),I={form:'ip',rev:12e6,vc:3e6,vs:60,fc:1e6,fs:40,sal:60000,n:2,msp:false},unl=false,res=[];
+const RN={usnD:'УСН «Доходы»',usnR:'УСН «Д−Р»',osno:'ОСНО',ausnD:'АУСН «Доходы»',ausnR:'АУСН «Д−Р»'},EX={usnD:[0,5,22],usnR:[0,5,22],osno:[0,22],ausnD:[0],ausnR:[0]},CL=['#2f4bd8','#0f9d8a','#e08a1e','#8a4fd0','#d6406b'];
+const vl=v=>v==5?'НДС '+P.v1+'%':v==22?'НДС '+P.vs+'%':'без НДС',nm=r=>RN[r.g]+', '+vl(r.v);
+function ndfl(x){if(x<=0)return 0;const L=[P.l0,P.l1,P.l2,P.l3,Infinity],R=[P.r0,P.r1,P.r2,P.r3,P.r4];let t=0,p=0;for(let k=0;k<5;k++){if(x>L[k]){t+=(L[k]-p)*R[k]/100;p=L[k]}else return t+(x-p)*R[k]/100}return t}
+function calc(i){const ip=i.form=='ip',rev=i.rev,vV=i.vc*i.vs/100,vN=i.vc-vV,fV=i.fc*i.fs/100,fN0=i.fc-fV,s=i.sal*12,n=i.n,o=[],m=P.mk*P.mrot;
+const cn=i.msp?12*(P.cR*Math.min(i.sal,m)+P.mR*Math.max(i.sal-m,0))/100:(P.cR*Math.min(s,P.cLim)+P.cR2*Math.max(s-P.cLim,0))/100,PAY=n*s,CON=n*(cn+P.injR*s/100);
+const R5=rev<=P.vt?rev/(1+P.v1/100):P.vt/(1+P.v1/100)+(rev-P.vt)/(1+P.v2/100),k=1+P.vs/100;
+const V={0:{R:rev,vv:vV,fv:fV},5:{R:R5,vv:vV,fv:fV},22:{R:rev/k,vv:vV/k,fv:fV/k}};
+const own=b=>ip?Math.min(P.fix+Math.min(Math.max((b-P.thr)*P.ir/100,0),P.maxVar),P.maxTot):0;
+for(const g in EX)for(const v of EX[g]){const x=V[v],Rv=x.R,au=g[0]=='a',con=au?(n>0?P.injF:0):CON,gross=Rv-x.vv-vN,op=gross-x.fv-fN0-PAY-con;let ow=0,tax=0,ok=true,why='';
+if(g[0]=='u'&&rev>P.usnLim){ok=false;why='Доход выше лимита УСН'}
+else if(g[0]=='u'&&v==0&&rev>P.vex){ok=false;why='На УСН при доходе выше '+F(P.vex)+' ₽ НДС обязателен'}
+else if(g=='osno'&&v==0&&rev/4>P.ex145){ok=false;why='Освобождение от НДС на ОСНО при выручке до '+F(P.ex145)+' ₽ за 3 месяца'}
+else if(au&&rev>P.ausnLim){ok=false;why='Доход выше лимита АУСН '+F(P.ausnLim)+' ₽'}
+else if(au&&n>P.ausnN){ok=false;why='На АУСН не больше '+P.ausnN+' работников'}
+if(g=='usnD'){ow=own(Rv);const c=Rv*P.usnD/100,cap=c*P.ded/100,u=ip?(n>0?Math.min(ow+con,cap):Math.min(ow,c*P.dedSolo/100)):Math.min(con,cap);tax=Math.max(c-u,0)}
+else if(g=='usnR'){ow=own(Math.max(op,0));tax=Math.max(Math.max(op-ow,0)*P.usnR/100,Rv*P.usnRm/100)}
+else if(g=='osno'){ow=own(Math.max(op,0));tax=ip?ndfl(op-ow):Math.max(op,0)*P.profit/100}
+else if(g=='ausnD')tax=rev*P.ausnD/100;
+else tax=Math.max(Math.max(op,0)*P.ausnR/100,rev*P.ausnRm/100);
+const vatIn=v==22?(vV-x.vv)+(fV-x.fv):0,vat=v==0?0:(rev-Rv)-vatIn,net=op-ow-tax;
+o.push({id:g+'|'+v,g,v,ok,why,Rv,vv:x.vv,vN,gross,fv:x.fv,fN:fN0,pay:PAY,con,op,ow,tax,vat,net,exp:rev-net-ow-tax-vat})}
+return o}
+const pc=(a,b)=>b?(a/b*100).toFixed(1):'0.0';
+const tipOf=r=>'<b>'+nm(r)+'</b><br>Чистая прибыль: '+M(r.net)+'<br>Налог: '+M(r.tax)+(r.ow?'<br>Взносы ИП: '+M(r.ow):'')+(r.vat?'<br>НДС к уплате: '+M(r.vat):'')+'<br>Нагрузка: '+pc(r.tax+r.ow+r.vat,I.rev)+'% выручки';
+function render(){res=calc(I);const ok=res.filter(r=>r.ok).sort((a,b)=>b.net-a.net),best=ok[0];
+$('#eff').textContent='Параметры закона с '+P.date.split('-').reverse().join('.');
+const sec=ok[1],w=ok[ok.length-1];
+$('#hero').innerHTML=best?'<div><small>Лучший вариант</small><div style="font-size:18px;font-weight:650">'+nm(best)+'</div><small>'+(sec?'+'+M(best.net-sec.net)+' к следующему, +'+M(best.net-w.net)+' к худшему':'')+'</small></div><div style="text-align:right"><div class="big">'+M(best.net)+'</div><small>чистой прибыли в год, '+pc(best.net,I.rev)+'% выручки</small></div>':'<b>Нет доступных режимов</b>';
+const mx=Math.max(1,...ok.map(r=>Math.abs(r.net)));
+$('#bars').innerHTML=ok.map((r,k)=>'<div class="bar '+(k?'':'best ')+(r.net<0?'neg':'')+'" data-id="'+r.id+'" data-tip="'+ea(tipOf(r))+'"><span>'+nm(r)+'</span><div class="trk"><div class="fl" style="width:'+Math.abs(r.net)/mx*100+'%"></div></div><span class="v">'+M(r.net)+'</span></div>').join('');
+const sg=[['Расходы','#8b95a7','exp'],['Налог','#e08a1e','tax'],['Взносы ИП','#8a4fd0','ow'],['НДС','#d6406b','vat'],['Чистая прибыль','#0f9d8a','net']];
+$('#stk').innerHTML=ok.slice(0,5).map(r=>'<div style="margin-bottom:10px"><div style="font-size:13px;margin-bottom:4px">'+nm(r)+'</div><div class="st">'+sg.map(q=>r[q[2]]>0?'<i style="width:'+r[q[2]]/I.rev*100+'%;background:'+q[1]+'" data-tip="'+ea(q[0]+': '+M(r[q[2]])+' ('+pc(r[q[2]],I.rev)+'%)')+'"></i>':'').join('')+'</div></div>').join('');
+$('#lgs').innerHTML=sg.map(q=>'<span><b style="background:'+q[1]+'"></b>'+q[0]+'</span>').join('');
+let h='<tr><th></th>'+Object.keys(EX).map(g=>'<th>'+RN[g]+'</th>').join('')+'</tr>';const lo=ok.length?ok[ok.length-1].net:0,hi=best?best.net:1;
+for(const v of[0,5,22]){h+='<tr><th>'+vl(v)+'</th>';for(const g in EX){const r=res.find(q=>q.id==g+'|'+v);
+if(!r)h+='<td class="na">—</td>';else if(!r.ok)h+='<td class="na" data-tip="'+ea(r.why)+'">н/д</td>';
+else h+='<td class="c '+(r==best?'best ':'')+(r.net<0?'neg':'')+'" data-id="'+r.id+'" style="background:color-mix(in srgb,var(--good) '+Math.round(8+(hi>lo?(r.net-lo)/(hi-lo):1)*42)+'%,var(--card))" data-tip="'+ea(tipOf(r))+'">'+F(r.net)+'</td>'}h+='</tr>'}
+$('#mx').innerHTML=h;chart(best)}
+function chart(best){const sv=$('#ln');if(!I.rev){sv.innerHTML='';return}
+const N=25,lo=.2*I.rev,hi=1.8*I.rev,xs=[],S={};
+for(let k=0;k<N;k++){const x=lo+(hi-lo)*k/(N-1);xs.push(x);calc({...I,rev:x,vc:I.vc*x/I.rev}).forEach(r=>{if(r.ok){S[r.g]=S[r.g]||[];S[r.g][k]=Math.max(S[r.g][k]??-Infinity,r.net)}})}
+const G=Object.keys(EX),all=G.flatMap(g=>(S[g]||[]).filter(v=>v!=null)),y0=Math.min(0,...all),y1=Math.max(1,...all),L=64,T=10,W=720-L-10,Hh=290-T-30,X=x=>L+(x-lo)/(hi-lo)*W,Y=y=>T+Hh-(y-y0)/(y1-y0)*Hh;
+let o='';for(let k=0;k<=4;k++){const y=y0+(y1-y0)*k/4;o+='<line x1="'+L+'" x2="710" y1="'+Y(y)+'" y2="'+Y(y)+'" stroke="var(--line)"/><text x="'+(L-6)+'" y="'+(Y(y)+4)+'" text-anchor="end">'+(y/1e6).toFixed(1)+'</text>';const x=lo+(hi-lo)*k/4;o+='<text x="'+X(x)+'" y="284" text-anchor="middle">'+(x/1e6).toFixed(1)+'</text>'}
+G.forEach((g,j)=>{let d='';(S[g]||[]).forEach((v,k)=>{if(v!=null)d+=(d&&S[g][k-1]!=null?'L':'M')+X(xs[k]).toFixed(1)+' '+Y(v).toFixed(1)});if(d)o+='<path d="'+d+'" fill="none" stroke="'+CL[j]+'" stroke-width="'+(best&&best.g==g?3:1.8)+'"/>'});
+o+='<line x1="'+X(I.rev)+'" x2="'+X(I.rev)+'" y1="'+T+'" y2="'+(T+Hh)+'" stroke="var(--acc)" stroke-dasharray="4 4"/><line id="gd" y1="'+T+'" y2="'+(T+Hh)+'" stroke="var(--mut)" opacity="0"/><rect id="ov" x="'+L+'" y="'+T+'" width="'+W+'" height="'+Hh+'" fill="transparent"/>';
+sv.innerHTML=o;$('#lgl').innerHTML=G.map((g,j)=>'<span><b style="background:'+CL[j]+'"></b>'+RN[g]+'</span>').join('')+'<span>Оси в млн ₽</span>';
+const ov=$('#ov'),gd=$('#gd');ov.onpointermove=e=>{const b=sv.getBoundingClientRect(),f=Math.max(0,Math.min(1,((e.clientX-b.left)/b.width*720-L)/W)),k=Math.round(f*(N-1));gd.setAttribute('x1',X(xs[k]));gd.setAttribute('x2',X(xs[k]));gd.setAttribute('opacity',1);
+tip.innerHTML='<b>Выручка '+M(xs[k])+'</b>'+G.map((g,j)=>S[g]&&S[g][k]!=null?'<br><span style="color:'+CL[j]+'">●</span> '+RN[g]+': '+M(S[g][k]):'').join('');tip.style.display='block';pos(e)};ov.onpointerleave=()=>{gd.setAttribute('opacity',0);tip.style.display='none'}}
+function showPL(id){const r=res.find(q=>q.id==id);if(!r)return;const row=(l,a,c)=>'<tr class="'+(c||'')+'"><td>'+l+'</td><td>'+F(a)+'</td><td>'+pc(a,r.Rv)+'%</td></tr>';
+dlg.innerHTML='<h2>'+nm(r)+'</h2><div class="sc"><table><tr><th>Строка</th><th>Сумма, ₽</th><th>% от выручки</th></tr>'+row('Выручка'+(r.v?' без НДС':''),r.Rv,'t')+row('Переменные расходы с НДС',r.vv)+row('Переменные расходы без НДС',r.vN)+row('Валовая прибыль',r.gross,'t')+row('Постоянные расходы с НДС',r.fv)+row('Постоянные расходы без НДС',r.fN)+row('Зарплата работников',r.pay)+row('Взносы за работников',r.con)+row('Операционная прибыль',r.op,'t')+(I.form=='ip'?row('Взносы ИП за себя',-r.ow):'')+row('Налог',-r.tax)+row('Чистая прибыль',r.net,'t')+(r.v?row('НДС к уплате в бюджет (справочно)',r.vat):'')+'</table></div><p><button class="btn" id="x">Закрыть</button></p>';dlg.showModal();$('#x').onclick=()=>dlg.close()}
+const num=e=>+e.value.replace(/[\s\u00a0]/g,'').replace(',','.')||0,fi=e=>{const d=e.value.replace(/\D/g,'');e.value=d?(+d).toLocaleString('ru-RU'):''};
+const ins=[...document.querySelectorAll('.side input[data-k]')];
+function sync(){ins.forEach(e=>e.value=F(I[e.dataset.k]));$('#msp').checked=I.msp}
+function commit(){ins.forEach(e=>{let v=num(e);if(e.dataset.p)v=Math.min(100,v);I[e.dataset.k]=v});I.msp=$('#msp').checked;sync();render()}
+ins.forEach(e=>{e.oninput=()=>fi(e);e.onkeydown=ev=>{if(ev.key=='Enter'){ev.preventDefault();commit()}};e.onchange=commit;e.onfocus=()=>e.select()});
+$('#go').onclick=commit;$('#msp').onchange=commit;
+$('#seg').onclick=e=>{const f=e.target.dataset.f;if(!f)return;I.form=f;[...$('#seg').children].forEach(b=>b.classList.toggle('on',b.dataset.f==f));render()};
+document.addEventListener('click',e=>{const t=e.target.closest('[data-id]');if(t)showPL(t.dataset.id)});
+const tip=$('#tip'),pos=e=>{tip.style.left=Math.max(8,Math.min(e.clientX+14,innerWidth-310))+'px';tip.style.top=(e.clientY+16)+'px'};
+$('#inf').dataset.tip='Расчёт годовой и ориентировочный, это не налоговая консультация. Региональные льготные ставки не учтены. Прибыль ООО показана до налога на дивиденды. На АУСН взносы за работников не платятся, кроме травматизма. Выручка выше лимитов режима отмечена как н/д.';
+document.addEventListener('mouseover',e=>{const t=e.target.closest('[data-tip]');if(t){tip.innerHTML=t.dataset.tip;tip.style.display='block';pos(e)}else if(!e.target.closest('#ov'))tip.style.display='none'});
+document.addEventListener('mousemove',e=>{if(tip.style.display=='block'&&!e.target.closest('#ov'))pos(e)});
+document.addEventListener('touchstart',e=>{const t=e.target.closest('.q');if(t){tip.innerHTML=t.dataset.tip;tip.style.display='block';const b=t.getBoundingClientRect();tip.style.left=Math.max(8,Math.min(b.left,innerWidth-310))+'px';tip.style.top=(b.bottom+8)+'px'}else tip.style.display='none'},{passive:true});
+const dlg=$('#dlg');
+async function sha(s){const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(s));return[...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('')}
+function openD(){dlg.innerHTML=unl?editor():'<h2>Параметры закона</h2><label>Пароль<div class="in"><input type="password" id="pw" autocomplete="off"></div></label><div class="err" id="er"></div><div class="hd"><button class="btn p" id="ok">Открыть</button><button class="btn" id="x">Закрыть</button></div>';dlg.showModal();bind()}
+function editor(){let h='<h2>Параметры законодательства</h2><label>Действуют с даты<div class="in"><input type="date" id="pd" value="'+P.date+'"></div></label><div class="pg">';
+SCH.forEach(s=>{h+=s.length==1?'<h3>'+s[0]+'</h3>':'<label>'+s[1]+'<div class="in"><input data-k="'+s[0]+'" data-u="'+s[2]+'" inputmode="decimal" value="'+(s[2]=='₽'?F(P[s[0]]):P[s[0]])+'"><span>'+s[2]+'</span></div></label>'});
+return h+'</div><div class="err" id="er"></div><div class="hd"><button class="btn p" id="sv">Сохранить</button><button class="btn" id="rs">По умолчанию</button><button class="btn" id="x">Закрыть</button></div>'}
+function bind(){const g=s=>dlg.querySelector(s);g('#x').onclick=()=>dlg.close();
+if(g('#ok')){const go=async()=>{if(await sha(g('#pw').value)==H){unl=true;dlg.innerHTML=editor();bind()}else g('#er').textContent='Неверный пароль'};g('#ok').onclick=go;g('#pw').onkeydown=e=>{if(e.key=='Enter')go()}}
+if(g('#sv')){dlg.querySelectorAll('[data-k]').forEach(e=>{if(e.dataset.u=='₽')e.oninput=()=>fi(e)});
+g('#sv').onclick=()=>{const n={date:g('#pd').value||P.date};let bad='';dlg.querySelectorAll('[data-k]').forEach(e=>{const v=parseFloat(e.value.replace(/[\s\u00a0]/g,'').replace(',','.'));if(isNaN(v)||v<0||(e.dataset.u=='%'&&v>100))bad=bad||'Проверьте: '+e.closest('label').firstChild.textContent;n[e.dataset.k]=v});
+if(!bad&&!(n.l0<n.l1&&n.l1<n.l2&&n.l2<n.l3))bad='Границы ступеней НДФЛ должны расти';if(bad){g('#er').textContent=bad;return}
+P=n;try{localStorage.setItem(KEY,JSON.stringify(P))}catch(e){}render();dlg.close()};
+g('#rs').onclick=()=>{P={...D};try{localStorage.removeItem(KEY)}catch(e){}render();dlg.innerHTML=editor();bind()}}}
+
+function pdfOf(jpg,w,h){const enc=new TextEncoder(),parts=[],off=[];let len=0;const add=d=>{const u=typeof d=='string'?enc.encode(d):d;parts.push(u);len+=u.length};
+add('%PDF-1.4\n');const o=(n,body,st)=>{off[n]=len;add(n+' 0 obj\n'+body+(st?'\nstream\n':'\nendobj\n'));if(st){add(st);add('\nendstream\nendobj\n')}};
+o(1,'<</Type/Catalog/Pages 2 0 R>>');o(2,'<</Type/Pages/Kids[3 0 R]/Count 1>>');o(3,'<</Type/Page/Parent 2 0 R/MediaBox[0 0 595 842]/Contents 4 0 R/Resources<</XObject<</I 5 0 R>>>>>>');
+const cs='q 595 0 0 842 0 0 cm /I Do Q';o(4,'<</Length '+cs.length+'>>',cs);
+o(5,'<</Type/XObject/Subtype/Image/Width '+w+'/Height '+h+'/ColorSpace/DeviceRGB/BitsPerComponent 8/Filter/DCTDecode/Length '+jpg.length+'>>',jpg);
+const xr=len;let t='xref\n0 6\n0000000000 65535 f \n';for(let i=1;i<6;i++)t+=String(off[i]).padStart(10,'0')+' 00000 n \n';
+add(t+'trailer\n<</Size 6/Root 1 0 R>>\nstartxref\n'+xr+'\n%%EOF');const out=new Uint8Array(len);let q=0;parts.forEach(u=>{out.set(u,q);q+=u.length});return out}
+function mkPDF(){const ok=res.filter(r=>r.ok).sort((a,b)=>b.net-a.net),W=1190,HH=1684,c=document.createElement('canvas');c.width=W;c.height=HH;const x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,W,HH);
+const T=(s,px,py,sz,w,col,al)=>{x.font=(w||400)+' '+sz+'px "Segoe UI",Roboto,Arial,sans-serif';x.fillStyle=col||'#161a22';x.textAlign=al||'left';x.fillText(s,px,py)};
+T('Налоговый калькулятор: результаты расчёта',70,100,40,700);
+T((I.form=='ip'?'ИП':'ООО')+'. Параметры закона с '+P.date.split('-').reverse().join('.')+'. Расчёт от '+new Date().toLocaleDateString('ru-RU'),70,140,21,400,'#6b7280');
+[['Выручка с НДС',M(I.rev)],['Переменные расходы',M(I.vc)+', с НДС '+I.vs+'%'],['Постоянные расходы',M(I.fc)+', с НДС '+I.fs+'%'],['Работники',I.n+' чел., зарплата '+M(I.sal)+(I.msp?', тариф МСП':'')]].forEach((a,k)=>{T(a[0],70,200+k*32,21,400,'#6b7280');T(a[1],340,200+k*32,21,600)});
+const b=ok[0];if(b){x.fillStyle='#e3f5ee';x.fillRect(70,345,1050,105);T('Лучший вариант: '+nm(b),95,388,25,600);T(M(b.net)+' чистой прибыли в год ('+pc(b.net,I.rev)+'% выручки)',95,430,25,700,'#0f7b5f')}
+T('Чистая прибыль по вариантам',70,510,27,700);const mx=Math.max(1,...ok.map(r=>Math.abs(r.net)));
+ok.forEach((r,k)=>{const y=545+k*46;T(nm(r),70,y+22,20);x.fillStyle=r.net<0?'#c0392b':k?'#9fb0f0':'#0f7b5f';x.fillRect(390,y+5,Math.max(2,Math.abs(r.net)/mx*500),20);T(M(r.net),1120,y+22,20,600,'#161a22','right')});
+let y=545+ok.length*46+50;if(b){T('Подробный расчёт: '+nm(b),70,y,27,700);y+=20;const R=[['Выручка'+(b.v?' без НДС':''),b.Rv],['Переменные расходы с НДС',b.vv],['Переменные расходы без НДС',b.vN],['Валовая прибыль',b.gross],['Постоянные расходы с НДС',b.fv],['Постоянные расходы без НДС',b.fN],['Зарплата работников',b.pay],['Взносы за работников',b.con],['Операционная прибыль',b.op]];
+if(I.form=='ip')R.push(['Взносы ИП за себя',-b.ow]);R.push(['Налог',-b.tax],['Чистая прибыль',b.net]);
+R.forEach((a,k)=>{const bold=/прибыль|Выручка/.test(a[0])?600:400;T(a[0],70,y+30+k*32,20,bold);T(F(a[1]||0),820,y+30+k*32,20,bold,'#161a22','right');T(pc(a[1]||0,b.Rv)+'%',1000,y+30+k*32,20,400,'#6b7280','right')})}
+T('Расчёт годовой и ориентировочный, это не налоговая консультация.',70,1640,18,400,'#6b7280');
+const bin=atob(c.toDataURL('image/jpeg',.92).split(',')[1]),u=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)u[i]=bin.charCodeAt(i);return pdfOf(u,W,HH)}
+let dl=null;try{window.claude&&claude.use('downloads').then(d=>{if(d){dl=d;$('#pdf').hidden=false}}).catch(()=>{})}catch(e){}
+$('#pdf').onclick=async()=>{try{await dl.save({filename:'nalogi-raschet.pdf',data:mkPDF()})}catch(e){if(!e||e.code!='declined')alert('Не удалось сохранить PDF')}};
+$('#lock').onclick=openD;sync();render();
+</script></body></html>
